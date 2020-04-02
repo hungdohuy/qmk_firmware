@@ -1,19 +1,4 @@
-/* Copyright 2020 Hung DO <hungdohuy@gmail.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-#include QMK_KEYBOARD_H
+#include "hdo.h"
 
 uint8_t is_master;
 
@@ -50,115 +35,68 @@ void add_keylog(uint16_t keycode);
 #    define UC(x) KC_NO
 #endif
 
-enum layers {
-    _QWERTY = 0,
-    _LOWER,
-    _RAISE,
-    _ADJUST
-};
+/*
+ * The `LAYOUT_kyria_base` macro is a template to allow the use of identical
+ * modifiers for the default layouts (eg QWERTY, Colemak, Dvorak, etc), so
+ * that there is no need to set them up for each layout, and modify all of
+ * them if I want to change them.  This helps to keep consistency and ease
+ * of use. K## is a placeholder to pass through the individual keycodes
+ */
+
+// clang-format off
+#define LAYOUT_kyria_base( \
+    K01, K02, K03, K04, K05, K06, K07, K08, K09, K0A, \
+    K11, K12, K13, K14, K15, K16, K17, K18, K19, K1A, \
+    K21, K22, K23, K24, K25, K26, K27, K28, K29, K2A  \
+  ) \
+  LAYOUT_wrapper( \
+      KC_ESC,  K01,     K02,     K03,     K04,     K05,                                             K06,     K07,     K08,     K09,     K0A,     KC_BSPC, \
+      LCTL_T(KC_TAB), K11, K12,     K13,     K14,     K15,                                          K16,     K17,     K18,     K19,     K1A, RALT_T(KC_ENT), \
+      OS_LSFT, CTL_T(K21), K22,  K23,     K24,     K25,     UC_SHRG,   KC_NO,       KC_NO, KC_NO,   K26,     K27,     K28,     K29, RCTL_T(K2A), OS_RSFT, \
+                                 KC_MUTE, KC_LALT, KC_LGUI,  KC_SPC,  BK_LWER,     DL_RAIS, KC_SPC,  KC_ENT, KC_RALT, KC_MPLY \
+    )
+/* Re-pass though to allow templates to be used */
+#define LAYOUT_kyria_base_wrapper(...)       LAYOUT_kyria_base(__VA_ARGS__)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-/*
- * Base Layer: QWERTY
- *
- * ,-------------------------------------------.                              ,-------------------------------------------.
- * |RAIS/ESC|   Q  |   W  |   E  |   R  |   T  |                              |   Y  |   U  |   I  |   O  |   P  |  | \   |
- * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |Ctrl/BS |   A  |   S  |  D   |   F  |   G  |                              |   H  |   J  |   K  |   L  | ;  : |  ' "   |
- * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * | LShift |   Z  |   X  |   C  |   V  |   B  |LShift|LShift|  |LShift|LShift|   N  |   M  | ,  < | . >  | /  ? |  - _   |
- * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | GUI  | Del  | Enter| Space| Esc  |  | Enter| Space| Tab  | Bksp | AltGr|
- *                        |      |      | Alt  | Lower| Raise|  | Lower| Raise|      |      |      |
- *                        `----------------------------------'  `----------------------------------'
- */
-    [_QWERTY] = LAYOUT(
-      LT(_RAISE, KC_ESC),       KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,                                         KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_PIPE,
-      MT(MOD_LCTL, KC_BSPC),   KC_A,   KC_S,   KC_D,   KC_F,   KC_G,                                         KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-      KC_LSFT,                 KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,   KC_LSFT,   KC_LSFT, KC_LSFT, KC_LSFT, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_MINS,
-              KC_LGUI, KC_DEL, MT(MOD_LALT, KC_ENT), LT(_LOWER, KC_SPC), LT(_RAISE, KC_ESC), LT(_LOWER, KC_ENT), LT(_RAISE, KC_SPC), KC_TAB,  KC_BSPC, KC_RALT
+
+    [_QWERTY] = LAYOUT_kyria_base_wrapper(
+        _________________QWERTY_L1_________________, _________________QWERTY_R1_________________,
+        _________________QWERTY_L2_________________, _________________QWERTY_R2_________________,
+        _________________QWERTY_L3_________________, _________________QWERTY_R3_________________
     ),
-/*
- * Lower Layer: Symbols
- *
- * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |  !   |  @   |  {   |  }   |  |   |                              |      |      |      |      |      |  | \   |
- * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |  #   |  $   |  (   |  )   |  `   |                              |   +  |  -   |  /   |  *   |  %   |  ' "   |
- * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |  %   |  ^   |  [   |  ]   |  ~   |      |      |  |      |      |   &  |  =   |  ,   |  .   |  / ? | - _    |
- * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      |  ;   |  =   |  |  =   |  ;   |      |      |      |
- *                        |      |      |      |      |      |  |      |      |      |      |      |
- *                        `----------------------------------'  `----------------------------------'
- */
-    [_LOWER] = LAYOUT(
-      _______, KC_EXLM, KC_AT,   KC_LCBR, KC_RCBR, KC_PIPE,                                     _______, _______, _______, _______, _______, KC_BSLS,
-      _______, KC_HASH, KC_DLR,  KC_LPRN, KC_RPRN, KC_GRV,                                      KC_PLUS, KC_MINS, KC_SLSH, KC_ASTR, KC_PERC, KC_QUOT,
-      _______, KC_PERC, KC_CIRC, KC_LBRC, KC_RBRC, KC_TILD, _______, _______, _______, _______, KC_AMPR, KC_EQL,  KC_COMM, KC_DOT,  KC_SLSH, KC_MINS,
-                                 _______, _______, _______, KC_SCLN, KC_EQL,  KC_EQL,  KC_SCLN, _______, _______, _______
+    [_MODS] = LAYOUT_wrapper(
+        _______, ___________________BLANK___________________,                                       ___________________BLANK___________________, _______,
+        _______, ___________________BLANK___________________,                                       ___________________BLANK___________________, _______,
+        KC_LSFT, ___________________BLANK___________________, _______, _______,   _______, _______, ___________________BLANK___________________, KC_RSFT,
+                                   _______, _______, KC_LALT, _______, _______,   _______, _______, KC_RGUI, _______, _______
     ),
-/*
- * Raise Layer: Number keys, media, navigation
- *
- * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        |   1  |  2   |  3   |  4   |  5   |                              |  6   |  7   |  8   |  9   |  0   |        |
- * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        |      | Prev | Play | Next | VolUp|                              | Left | Down | Up   | Right|      |        |
- * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      |      |      | Mute | VolDn|      |      |  |      |      | MLeft| Mdown| MUp  |MRight|      |        |
- * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      |      |      |  |      |      |      |      |      |
- *                        |      |      |      |      |      |  |      |      |      |      |      |
- *                        `----------------------------------'  `----------------------------------'
- */
-    [_RAISE] = LAYOUT(
-      _______, KC_1, 	  KC_2,    KC_3,    KC_4,    KC_5,                                        KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______,
-      _______, _______, KC_MPRV, KC_MPLY, KC_MNXT, KC_VOLU,                                     KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, _______,
-      _______, _______, _______, _______, KC_MUTE, KC_VOLD, _______, _______, _______, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, _______, _______,
-                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    [_LOWER] = LAYOUT_wrapper(
+        KC_GRV,  _________________LOWER_L1__________________,                                       _________________LOWER_R1__________________, S(KC_INS),
+        _______, _________________LOWER_L2__________________,                                       _________________LOWER_R2__________________, KC_PIPE,
+        _______, _________________LOWER_L3__________________, _______, _______,   _______, _______, _________________LOWER_R3__________________, _______,
+                                   _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______
     ),
-/*
- * Adjust Layer: Function keys, RGB
- *
- * ,-------------------------------------------.                              ,-------------------------------------------.
- * |        | F1   |  F2  | F3   | F4   | F5   |                              | F6   | F7   |  F8  | F9   | F10  |        |
- * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |        | TOG  | SAI  | HUI  | VAI  | MOD  |                              |      |      |      | F11  | F12  |        |
- * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |        |      | SAD  | HUD  | VAD  | RMOD |      |      |  |      |      |      |      |      |      |      |        |
- * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        |      |      |      |      |      |  |      |      |      |      |      |
- *                        |      |      |      |      |      |  |      |      |      |      |      |
- *                        `----------------------------------'  `----------------------------------'
- */
-    [_ADJUST] = LAYOUT(
-      _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                                       KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  _______,
-      _______, RGB_TOG, RGB_SAI, RGB_HUI, RGB_VAI, RGB_MOD,                                     _______, _______, _______, KC_F11,  KC_F12,  _______,
-      _______, _______, RGB_SAD, RGB_HUD, RGB_VAD, RGB_RMOD,_______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-                                 _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    [_RAISE] = LAYOUT_wrapper(
+        KC_GRV,  _________________RAISE_L1__________________,                                       _________________RAISE_R1__________________, KC_F11,
+        _______, _________________RAISE_L2__________________,                                       _________________RAISE_R2__________________, KC_BSLS,
+        _______, _________________RAISE_L3__________________, _______, _______,   _______, _______, _________________RAISE_R3__________________, _______,
+                                   _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______
     ),
-// /*
-//  * Layer template
-//  *
-//  * ,-------------------------------------------.                              ,-------------------------------------------.
-//  * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
-//  * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
-//  * |        |      |      |      |      |      |                              |      |      |      |      |      |        |
-//  * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
-//  * |        |      |      |      |      |      |      |      |  |      |      |      |      |      |      |      |        |
-//  * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
-//  *                        |      |      |      |      |      |  |      |      |      |      |      |
-//  *                        |      |      |      |      |      |  |      |      |      |      |      |
-//  *                        `----------------------------------'  `----------------------------------'
-//  */
-//     [_LAYERINDEX] = LAYOUT(
-//       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-//       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-//       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-//                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    [_ADJUST] = LAYOUT_wrapper(
+        KC_MAKE, _________________ADJUST_L1_________________,                                       _________________ADJUST_R1_________________, KC_RESET,
+        VRSN,    _________________ADJUST_L2_________________,                                       _________________ADJUST_R2_________________, EEP_RST,
+        _______, _________________ADJUST_L3_________________, HPT_TOG, HPT_FBK,   MG_NKRO, UC_MOD,  _________________ADJUST_R3_________________, TG_MODS,
+                                   _______, _______, _______, KC_NUKE, _______,   _______, _______, _______, _______, _______
+    ),
+//     [_LAYERINDEX] = LAYOUT_wrapper(
+//       _______, _______, _______, _______, _______, _______,                                       _______, _______, _______, _______, _______, _______,
+//       _______, _______, _______, _______, _______, _______,                                       _______, _______, _______, _______, _______, _______,
+//       _______, _______, _______, _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______, _______, _______, _______,
+//                                  _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______
 //     ),
 };
+// clang-format on
 
 bool process_record_keymap(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
@@ -176,14 +114,8 @@ bool process_record_keymap(uint16_t keycode, keyrecord_t *record) {
 }
 void matrix_init_keymap(void) { is_master = (uint8_t)is_keyboard_master(); }
 
-layer_state_t layer_state_set_user(layer_state_t state) {
-    return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
-}
-
 #ifdef OLED_DRIVER_ENABLE
-oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-	return OLED_ROTATION_180;
-}
+oled_rotation_t oled_init_user(oled_rotation_t rotation) { return OLED_ROTATION_180; }
 
 void add_keylog(uint16_t keycode) {
     if ((keycode >= QK_MOD_TAP && keycode <= QK_MOD_TAP_MAX) || (keycode >= QK_LAYER_TAP && keycode <= QK_LAYER_TAP_MAX) || (keycode >= QK_MODS && keycode <= QK_MODS_MAX)) {
@@ -210,8 +142,15 @@ void update_log(void) {
 }
 
 void render_keylogger_status(void) {
-    oled_write_P(PSTR("Keyogger: "), false);
+    oled_write_P(PSTR("Keylogger: "), false);
     oled_write(keylog_str, false);
+}
+
+void render_default_layer_state(void) {
+    oled_write_P(PSTR("Layout: "), false);
+    switch (get_highest_layer(default_layer_state)) {
+        case _QWERTY:  oled_write_ln_P(PSTR("Qwerty"), false); break;
+    }
 }
 
 void render_layer_state(void) {
@@ -221,7 +160,7 @@ void render_layer_state(void) {
     oled_write_P(PSTR(" "), false);
     oled_write_P(PSTR("Raise"), layer_state_is(_RAISE));
     oled_write_P(PSTR(" "), false);
-    oled_write_ln_P(PSTR("Adj"), layer_state_is(_ADJUST));
+    oled_write_ln_P(PSTR("Mods"), layer_state_is(_MODS));
 }
 
 void render_keylock_status(uint8_t led_usb_state) {
@@ -235,15 +174,63 @@ void render_keylock_status(uint8_t led_usb_state) {
 
 void render_mod_status(uint8_t modifiers) {
     oled_write_P(PSTR("Mods: "), false);
-    oled_write_P(PSTR("Sft"), (modifiers & MOD_MASK_SHIFT));
+    oled_write_P(PSTR("SFT"), (modifiers & MOD_MASK_SHIFT));
     oled_write_P(PSTR(" "), false);
-    oled_write_P(PSTR("Ctl"), (modifiers & MOD_MASK_CTRL));
+    oled_write_P(PSTR("CTL"), (modifiers & MOD_MASK_CTRL));
     oled_write_P(PSTR(" "), false);
-    oled_write_P(PSTR("Alt"), (modifiers & MOD_MASK_ALT));
+    oled_write_P(PSTR("ALT"), (modifiers & MOD_MASK_ALT));
     oled_write_P(PSTR(" "), false);
     oled_write_P(PSTR("GUI"), (modifiers & MOD_MASK_GUI));
 }
 
+void render_bootmagic_status(void) {
+    /* Show Ctrl-Gui Swap options */
+    static const char PROGMEM logo[][2][3] = {
+        {{0x97, 0x98, 0}, {0xb7, 0xb8, 0}},
+        {{0x95, 0x96, 0}, {0xb5, 0xb6, 0}},
+    };
+    oled_write_P(PSTR("Boot  "), false);
+    if (keymap_config.swap_lctl_lgui) {
+        oled_write_P(logo[1][0], false);
+    } else {
+        oled_write_P(logo[0][0], false);
+    }
+    oled_write_P(PSTR(" "), false);
+    oled_write_P(PSTR("NKRO"), keymap_config.nkro);
+    oled_write_P(PSTR(" "), false);
+    oled_write_ln_P(PSTR("GUI"), !keymap_config.no_gui);
+    oled_write_P(PSTR("Magic "), false);
+    if (keymap_config.swap_lctl_lgui) {
+        oled_write_P(logo[1][1], false);
+    } else {
+        oled_write_P(logo[0][1], false);
+    }
+    oled_write_P(PSTR(" "), false);
+    oled_write_P(PSTR("GRV"), keymap_config.swap_grave_esc);
+    oled_write_P(PSTR("  "), false);
+    oled_write_ln_P(PSTR("CAPS"), keymap_config.swap_control_capslock);
+}
+
+void render_user_status(void) {
+    oled_write_P(PSTR("USER: "), false);
+    oled_write_P(PSTR("Anim"), userspace_config.rgb_matrix_idle_anim);
+    oled_write_P(PSTR(" "), false);
+    oled_write_P(PSTR("Layr"), userspace_config.rgb_layer_change);
+    oled_write_P(PSTR(" "), false);
+    oled_write_ln_P(PSTR("Nuke"), userspace_config.nuke_switch);
+}
+
+// clang-format off
+void render_logo(void) {
+    static const char PROGMEM qmk_logo[] = {
+        0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,
+        0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab,0xac,0xad,0xae,0xaf,0xb0,0xb1,0xb2,0xb3,0xb4,
+        0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xd0,0xd1,0xd2,0xd3,0xd4,0};
+
+    oled_write_P(qmk_logo, false);
+}
+
+#    ifndef SPLIT_TRANSPORT_MIRROR
 static void render_hdo_logo(void) {
     static const char PROGMEM hdo_logo[] = {
         0x00, 0x00, 0x00, 0xf0, 0xf0, 0xf0, 0x00, 0x00, 0x00, 0x00, 0xf0, 0xf0, 0xf0, 0x00, 0x00, 0x00,
@@ -314,10 +301,26 @@ static void render_hdo_logo(void) {
         oled_write_raw_P(hdo_logo, sizeof(hdo_logo));
 }
 
-void render_status(void) {
+#    endif
+// clang-format on
+
+void render_status_main(void) {
     /* Show Keyboard Layout  */
-    render_layer_state();
+    render_default_layer_state();
     render_keylock_status(host_keyboard_leds());
+    render_bootmagic_status();
+    render_user_status();
+
+    render_keylogger_status();
+}
+
+void render_status_secondary(void) {
+    /* Show Keyboard Layout  */
+    render_logo();
+    render_default_layer_state();
+    render_layer_state();
+    render_mod_status(get_mods() | get_oneshot_mods());
+
     render_keylogger_status();
 }
 
@@ -333,13 +336,17 @@ void oled_task_user(void) {
 #    endif
 
     update_log();
-
-    if (is_keyboard_master()) {
-        render_status(); // Renders the current keyboard state (layer, lock, caps, scroll, etc)
+    if (is_master) {
+        render_status_main();  // Renders the current keyboard state (layer, lock, caps, scroll, etc)
     } else {
+#    ifdef SPLIT_TRANSPORT_MIRROR
+        render_status_secondary();
+#    else
         render_hdo_logo();
+#    endif
     }
 }
+
 #endif
 
 #ifdef ENCODER_ENABLE
@@ -347,17 +354,16 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) {
         // Volume control
         if (clockwise) {
-            tap_code(KC_VOLU);
-        } else {
             tap_code(KC_VOLD);
+        } else {
+            tap_code(KC_VOLU);
         }
-    }
-    else if (index == 1) {
+    } else if (index == 1) {
         // Page up/Page down
         if (clockwise) {
-            tap_code(KC_PGDN);
-        } else {
             tap_code(KC_PGUP);
+        } else {
+            tap_code(KC_PGDN);
         }
     }
 }
