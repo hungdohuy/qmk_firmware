@@ -50,9 +50,9 @@ NOTE: These are all the same length.  If you do a search/replace
 #define _________________LOWER_L2__________________        _________________FUNC_LEFT_________________
 #define _________________LOWER_L3__________________        _________________FUNC_RIGHT________________
 
-#define _________________LOWER_R1__________________        KC_CIRC, KC_AMPR, _______, KC_LPRN, KC_RPRN
-#define _________________LOWER_R2__________________        _______, KC_LEFT, KC_UP, KC_RIGHT, KC_RCBR
-#define _________________LOWER_R3__________________        _______, _______, KC_DOWN, _______,_______
+#define _________________LOWER_R1__________________        KC_CIRC, KC_AMPR, KC_UP, KC_LPRN, KC_RPRN
+#define _________________LOWER_R2__________________        _______, KC_LEFT, KC_DOWN, KC_RIGHT, KC_RCBR
+#define _________________LOWER_R3__________________        _______, _______, _______, _______,_______
 
 
 

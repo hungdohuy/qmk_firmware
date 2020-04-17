@@ -50,10 +50,10 @@ void add_keylog(uint16_t keycode);
     K21, K22, K23, K24, K25, K26, K27, K28, K29, K2A  \
   ) \
   LAYOUT_wrapper( \
-      KC_ESC,  K01,     K02,     K03,     K04,     K05,                                             K06,     K07,     K08,     K09,     K0A,     KC_BSPC, \
-      LCTL_T(KC_TAB), K11, K12,     K13,     K14,     K15,                                          K16,     K17,     K18,     K19,     K1A, RALT_T(KC_ENT), \
-      OS_LSFT, CTL_T(K21), K22,  K23,     K24,     K25,     UC_SHRG,   KC_NO,       KC_NO, KC_NO,   K26,     K27,     K28,     K29, RCTL_T(K2A), OS_RSFT, \
-                                 KC_MUTE, KC_LALT, KC_LGUI,  KC_SPC,  BK_LWER,     DL_RAIS, KC_SPC,  KC_ENT, KC_RALT, KC_MPLY \
+      KC_ESC,         K01, K02,  K03,     K04,     K05,                                             K06,     K07,     K08,     K09,     K0A,     KC_BSLS, \
+      LCTL_T(KC_TAB), K11, K12,  K13,     K14,     K15,                                             K16,     K17,     K18,     K19,     K1A, KC_ENT, \
+      OS_LSFT, CTL_T(K21), K22,  K23,     K24,     K25,     KC_LEFT,   KC_DOWN,  KC_UP, KC_RIGHT,   K26,     K27,     K28,     K29, RCTL_T(K2A), OS_RSFT, \
+                                 KC_MUTE, KC_LALT, KC_LGUI,  KC_SPC ,  BK_LWER,  DL_RAIS, KC_SPC,  KC_RGUI, LT(_FUNC, KC_DEL), KC_MPLY \
     )
 /* Re-pass though to allow templates to be used */
 #define LAYOUT_kyria_base_wrapper(...)       LAYOUT_kyria_base(__VA_ARGS__)
@@ -74,13 +74,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_LOWER] = LAYOUT_wrapper(
         KC_GRV,  _________________LOWER_L1__________________,                                       _________________LOWER_R1__________________, S(KC_INS),
         _______, _________________LOWER_L2__________________,                                       _________________LOWER_R2__________________, KC_PIPE,
-        _______, _________________LOWER_L3__________________, _______, _______,   _______, _______, _________________LOWER_R3__________________, _______,
+        _______, _________________LOWER_L3__________________, KC_HOME, KC_PGDN,   KC_PGUP, KC_END,  _________________LOWER_R3__________________, _______,
                                    _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______
     ),
     [_RAISE] = LAYOUT_wrapper(
         KC_GRV,  _________________RAISE_L1__________________,                                       _________________RAISE_R1__________________, KC_F11,
         _______, _________________RAISE_L2__________________,                                       _________________RAISE_R2__________________, KC_BSLS,
-        _______, _________________RAISE_L3__________________, _______, _______,   _______, _______, _________________RAISE_R3__________________, _______,
+        _______, _________________RAISE_L3__________________, KC_HOME, KC_PGDN,   KC_PGUP, KC_END,  _________________RAISE_R3__________________, _______,
                                    _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______
     ),
     [_ADJUST] = LAYOUT_wrapper(
@@ -88,6 +88,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         VRSN,    _________________ADJUST_L2_________________,                                       _________________ADJUST_R2_________________, EEP_RST,
         _______, _________________ADJUST_L3_________________, HPT_TOG, HPT_FBK,   MG_NKRO, UC_MOD,  _________________ADJUST_R3_________________, TG_MODS,
                                    _______, _______, _______, KC_NUKE, _______,   _______, _______, _______, _______, _______
+    ),
+    [_FUNC] = LAYOUT_wrapper(
+        _______, ___________________BLANK___________________,                                       _______, _______, _______, _______, KC_LBRC, KC_RBRC,
+        _______, ___________________BLANK___________________,                                       _______, _______, _______, _______, KC_QUOT, _______,
+        _______, ___________________BLANK___________________, _______, _______,   _______, _______, _______, _______, _______, _______, _______, _______,
+                                   _______, _______, _______, _______, _______,   _______, _______, _______, _______, _______
     ),
 //     [_LAYERINDEX] = LAYOUT_wrapper(
 //       _______, _______, _______, _______, _______, _______,                                       _______, _______, _______, _______, _______, _______,
