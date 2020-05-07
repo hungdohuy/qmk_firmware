@@ -69,3 +69,22 @@ bool led_update_user(led_t led_state) {
     }
     return false;
 }
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (record->event.pressed) {
+        backlight_enable();
+        backlight_disable();
+    }
+      return true; // Process all other keycodes normally
+}
+
+
+
+
+
+
+
+
+
+
+

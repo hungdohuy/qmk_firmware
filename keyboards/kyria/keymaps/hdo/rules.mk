@@ -21,3 +21,4 @@ BOOTLOADER = atmel-dfu
 
 SPLIT_TRANSPORT = mirror
 SPLIT_KEYBOARD = yes
+VIA_ENABLE = yes

@@ -517,14 +517,19 @@ layer_state_t layer_state_set_rgb(layer_state_t state) {
     if (userspace_config.rgb_layer_change) {
         switch (get_highest_layer(state)) {
             case _RAISE:
-                rgblight_set_hsv_and_mode(HSV_YELLOW, RGBLIGHT_MODE_BREATHING + 3);
-                break;
-            case _LOWER:
                 rgblight_set_hsv_and_mode(HSV_GREEN, RGBLIGHT_MODE_BREATHING + 3);
                 break;
+            case _LOWER:
+                rgblight_set_hsv_and_mode(HSV_YELLOW, RGBLIGHT_MODE_BREATHING + 3);
+                break;
             case _ADJUST:
-                rgblight_set_hsv_and_mode(HSV_RED, RGBLIGHT_MODE_KNIGHT + 2);
+                rgblight_set_hsv_and_mode(HSV_SPRINGGREEN, RGBLIGHT_MODE_KNIGHT + 2);
                 break;  //  for any other layers, or the default layer
+            default: {
+                uint8_t mode = get_highest_layer(state) == _MODS ? RGBLIGHT_MODE_BREATHING : RGBLIGHT_MODE_STATIC_LIGHT;
+                rgblight_set_hsv_and_mode(HSV_CYAN, mode);
+                break;
+            }
         }
     }
 #endif  // RGBLIGHT_ENABLE
