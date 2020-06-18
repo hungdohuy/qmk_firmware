@@ -53,7 +53,7 @@ void add_keylog(uint16_t keycode);
       KC_ESC,         K01, K02,  K03,     K04,     K05,                                             K06,     K07,     K08,     K09,     K0A,     KC_BSLS, \
       LCTL_T(KC_TAB), K11, K12,  K13,     K14,     K15,                                             K16,     K17,     K18,     K19,     K1A, KC_ENT, \
       OS_LSFT, CTL_T(K21), K22,  K23,     K24,     K25,     KC_LEFT,   KC_DOWN,  KC_UP, KC_RIGHT,   K26,     K27,     K28,     K29, RCTL_T(K2A), OS_RSFT, \
-                                 KC_MUTE, KC_LALT, KC_LGUI,  KC_SPC ,  BK_LWER,  DL_RAIS, KC_SPC,  KC_RGUI, LT(_FUNC, KC_DEL), KC_MPLY \
+                                 KC_MUTE, KC_LALT, KC_LGUI,  KC_SPC ,  DL_LWER,  BK_RAIS, KC_SPC,  KC_RGUI, LT(_FUNC, KC_DEL), KC_MPLY \
     )
 /* Re-pass though to allow templates to be used */
 #define LAYOUT_kyria_base_wrapper(...)       LAYOUT_kyria_base(__VA_ARGS__)
@@ -330,16 +330,15 @@ void render_status_secondary(void) {
 }
 
 void oled_task_user(void) {
-    if (timer_elapsed32(oled_timer) > 30000) {
-        oled_off();
-        return;
-    }
-#    ifndef SPLIT_KEYBOARD
-    else {
-        oled_on();
-    }
-#    endif
-
+//     if (timer_elapsed32(oled_timer) > 10000) {
+//         oled_off();
+//         return;
+//     }
+// #    ifndef SPLIT_KEYBOARD
+//     else {
+//         oled_on();
+//     }
+// #    endif
     update_log();
     if (is_master) {
         render_status_main();  // Renders the current keyboard state (layer, lock, caps, scroll, etc)

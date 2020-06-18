@@ -64,9 +64,9 @@ bool process_record_keymap(uint16_t keycode, keyrecord_t *record);
 #    define KC_C1R3 KC_TAB
 #endif  // SWAP_HANDS_ENABLE
 
-#define BK_LWER LT(_LOWER, KC_BSPC)
+#define DL_LWER LT(_LOWER, KC_DEL)
 #define SP_LWER LT(_LOWER, KC_SPC)
-#define DL_RAIS LT(_RAISE, KC_DEL)
+#define BK_RAIS LT(_RAISE, KC_BSPC)
 #define ET_RAIS LT(_RAISE, KC_ENTER)
 
 /* OSM keycodes, to keep things clean and easy to change */
